@@ -1,0 +1,14 @@
+data/dataset/2.archive
+data/dataset/.complete/datasets/debarghamitraroy/casia-webface/2/bundle.complete
+data/dataset/casia-webface/property
+data/dataset/casia-webface/train.idx
+data/dataset/casia-webface/train.lst
+data/dataset/casia-webface/train.rec
+data/dataset/eval/agedb_30.bin
+data/dataset/eval/calfw.bin
+data/dataset/eval/cfp_ff.bin
+data/dataset/eval/cfp_fp.bin
+data/dataset/eval/cplfw.bin
+data/dataset/eval/lfw.bin
+data/dataset/eval/sllfw.bin
+data/dataset/eval/talfw.bin
