@@ -1,22 +1,20 @@
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
+
+from lsj_biometrics.campaign.face import CroppedFaceImage
 
 @dataclass(frozen=True)
 class Template:
-    vector: tuple[float, ...]
-    model_name: str
+    vector: tuple[float, ...] #representación para este probe
+    model_name: str #modelo usado para la representación (extracción de características)
     model_version: str
     normalized: bool = False
+    template_id: Optional[str] = None
+    identity_id: Optional[str] = None
+    face: Optional[CroppedFaceImage] = None
+    created_at: Optional[datetime] = None
 
     @property
     def dimension(self) -> int:
         return len(self.vector)
-
-
-@dataclass(frozen=True)
-class GalleryTemplate:
-    template_id: str
-    identity_id: str
-    image_id: str #could be more than one image, but for now we will assume that it is one image per template
-    template: Template
-    created_at: datetime | None = None

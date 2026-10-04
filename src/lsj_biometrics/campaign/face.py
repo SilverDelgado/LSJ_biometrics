@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from typing import Optional
+
+from lsj_biometrics.campaign.image import Image
 
 @dataclass(frozen=True)
 class BoundingBox:
@@ -10,11 +13,11 @@ class BoundingBox:
 @dataclass(frozen=True)
 class Face:
     face_id: str
-    image_id: str
+    image: Image
     bounding_box: BoundingBox
-    confidence: float
+    confidence: Optional[float] = None
 
 @dataclass(frozen=True)
-class FaceImage:
+class CroppedFaceImage:
     face_id: str
-    path: str
+    image: Image
