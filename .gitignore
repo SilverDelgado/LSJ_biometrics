@@ -12,3 +12,4 @@ data/dataset/eval/cplfw.bin
 data/dataset/eval/lfw.bin
 data/dataset/eval/sllfw.bin
 data/dataset/eval/talfw.bin
+data/crops/

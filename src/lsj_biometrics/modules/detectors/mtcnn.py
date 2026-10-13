@@ -1,22 +1,18 @@
 from typing import Any, Mapping
 
-import numpy as np
 from mtcnn import MTCNN
-from PIL import Image as PillowImage
 
 from lsj_biometrics.campaign.face import BoundingBox, Face
 from lsj_biometrics.campaign.image import Image
 from lsj_biometrics.engine.face_detector import DetectionResult
+from lsj_biometrics.image.loading import load_rgb
 
 class MTCNNFaceDetector:
     def __init__(self, detector: MTCNN | None = None) -> None:
         self._detector = detector or MTCNN()
 
     def detect(self, image: Image) -> DetectionResult:
-        with PillowImage.open(image.path) as source:
-            rgb_image = np.asarray(source.convert("RGB"))
-
-        detections: list[Mapping[str, Any]] = self._detector.detect_faces(rgb_image)
+        detections: list[Mapping[str, Any]] = self._detector.detect_faces(load_rgb(image.path))
         faces = tuple(
             self._to_face(image, detection, index)
             for index, detection in enumerate(detections)
