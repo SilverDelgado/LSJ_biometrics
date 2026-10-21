@@ -13,3 +13,7 @@ data/dataset/eval/lfw.bin
 data/dataset/eval/sllfw.bin
 data/dataset/eval/talfw.bin
 data/crops/
+__pycache__/
+.pytest_cache/
+.venv/
+tests/*

@@ -6,3 +6,4 @@ class Identity: #persona en el mundo real
     identity_id: str
     name: str | None = None
     created_at: datetime | None = None
+    group_id: str | None = None

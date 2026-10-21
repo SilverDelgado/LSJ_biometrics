@@ -18,3 +18,7 @@ class Template:
     @property
     def dimension(self) -> int:
         return len(self.vector)
+
+    @property
+    def model_key(self) -> str:
+        return f"{self.model_name}:{self.model_version}"

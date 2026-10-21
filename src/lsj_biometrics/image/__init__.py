@@ -1,5 +1,14 @@
 """Image loading, cropping and preprocessing utilities."""
+from .alignment import align_face, similarity_transform
 from .loading import load_rgb, open_rgb
-from .preprocess import ImagePreprocessor
+from .preprocess import AlignedPreprocessor, ImagePreprocessor, cropped_face
 
-__all__ = ["ImagePreprocessor", "load_rgb", "open_rgb"]
+__all__ = [
+    "AlignedPreprocessor",
+    "ImagePreprocessor",
+    "align_face",
+    "cropped_face",
+    "load_rgb",
+    "open_rgb",
+    "similarity_transform",
+]

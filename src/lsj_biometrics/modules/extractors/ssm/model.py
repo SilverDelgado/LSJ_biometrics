@@ -9,7 +9,16 @@ from lsj_biometrics.modules.extractors.ssm.layers import BidirectionalMambaBlock
 
 @dataclass(frozen=True)
 class SSMConfig:
+    name: str = "ssm-face"
+    version: str = "0.1.0"
     image_size: int = 112
+    reference_landmarks: tuple[tuple[float, float], ...] = (
+        (38.2946, 51.6963),
+        (73.5318, 51.5014),
+        (56.0252, 71.7366),
+        (41.5493, 92.3655),
+        (70.7299, 92.2041),
+    )
     patch_size: int = 8
     dim: int = 192
     depth: int = 6
