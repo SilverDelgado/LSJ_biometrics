@@ -19,11 +19,7 @@ class ImagePreprocessor:
         self._margin = margin
 
     def crop(self, face: Face) -> CroppedFaceImage:
-        cropped = (
-            open_rgb(face.image)
-            .crop(self._square_box(face.bounding_box))
-            .resize(self._size, PillowImage.Resampling.BILINEAR)
-        )
+        cropped = (open_rgb(face.image).crop(self._square_box(face.bounding_box)).resize(self._size, PillowImage.Resampling.BILINEAR))
         return cropped_face(face, np.asarray(cropped), self._output_dir)
 
     def _square_box(self, box: BoundingBox) -> tuple[int, int, int, int]:
@@ -51,12 +47,7 @@ class AlignedPreprocessor:
         return cropped_face(face, aligned, self._output_dir, self._layout)
 
 
-def cropped_face(
-    face: Face,
-    pixels: np.ndarray,
-    output_dir: Path | None = None,
-    layout: FaceLayout | None = None,
-) -> CroppedFaceImage:
+def cropped_face(face: Face, pixels: np.ndarray, output_dir: Path | None = None, layout: FaceLayout | None = None) -> CroppedFaceImage:
     path = None
     if output_dir is not None:
         path = output_dir / f"{re.sub(r'[^A-Za-z0-9._-]', '_', face.face_id)}.png"

@@ -1,4 +1,3 @@
-"""Image loading, cropping and preprocessing utilities."""
 from .alignment import align_face, similarity_transform
 from .loading import load_rgb, open_rgb
 from .preprocess import AlignedPreprocessor, ImagePreprocessor, cropped_face
