@@ -44,11 +44,16 @@ python data/dataset/download.py
 `kagglehub` puede pedir credenciales de Kaggle (`~/.kaggle/kaggle.json`). Si los traes en
 `casia-webface.zip`, descomprímelo con `unzip casia-webface.zip -d data/dataset`.
 
-Las fotos de la entrega (`Dataset.tar.gz`, no están en git):
+Las fotos de la entrega (`Dataset.tar.gz`, no están en git) están en la release `lsj-weights` del repo
+privado de la librería: https://github.com/SilverDelgado/dataset-transformation-library/releases/tag/lsj-weights
+(descárgalo con la sesión de GitHub iniciada), o con `gh`:
 
 ```bash
+gh release download lsj-weights -R SilverDelgado/dataset-transformation-library -p Dataset.tar.gz
 tar -xzf Dataset.tar.gz -C data
 ```
+
+sha256 `4bec72f4e2622f56f04f4207e6f6d950b0e8b877f40e57b0da347f6c01858cb3`.
 
 Tiene que quedar así:
 
@@ -67,7 +72,13 @@ mkdir weights
 curl -L -o weights/vssd_tiny_best_ema.pth https://huggingface.co/YuhengSSS/VSSD/resolve/main/vssd_tiny_best_ema.pth
 ```
 
-El maestro `arcface_r50.pth` (175 MB) no se puede descargar: cópialo a `weights/arcface_r50.pth`.
+El maestro `arcface_r50.pth` (175 MB, no cabe en git) está en la misma release `lsj-weights`:
+https://github.com/SilverDelgado/dataset-transformation-library/releases/tag/lsj-weights, a `weights/`, o con `gh`:
+
+```bash
+gh release download lsj-weights -R SilverDelgado/dataset-transformation-library -p arcface_r50.pth -D weights
+```
+
 sha256 `ef005ba502a2d0f40e7b94245054d3a23e375776f7035080fcbce45ae49cfb01`.
 
 ## 4. Comprobación rápida (unos minutos, en CPU)
