@@ -1,8 +1,8 @@
 paths:
-  casia: /data/users/pablodm/biometric/data/casia-webface
-  eval_dir: /data/users/pablodm/biometric/data/eval
+  casia: data/dataset/casia-webface
+  eval_dir: data/dataset/eval
   augment_specs: src/lsj_biometrics/training/configs/augment_specs.yaml
-  teacher_weights: /data/users/pablodm/biometric/models/arcface/arcface_r50.pth
+  teacher_weights: weights/arcface_r50.pth
   teacher_embeddings: runs/smoke/teacher_256.npy
   imagenet_weights: null
   output_dir: runs/smoke

@@ -52,28 +52,17 @@ Without a GPU, set `device: cpu` in the operating point (about 0.03 s per face o
 
 ## Training on another machine
 
-Sized for a 12 GB GPU (batch 64 x accumulation 2, bf16). Every path is in
-`src/lsj_biometrics/training/configs/train.yaml`; only `paths` change between machines.
-
-1. `git clone` and `uv sync --extra dev`.
-2. CASIA-WebFace (aligned 112, RecordIO) and the `.bin` verification sets: `python data/dataset/download.py`,
-   then `casia: data/dataset/casia-webface` and `eval_dir: data/dataset/eval`.
-3. VSSD-T ImageNet weights into `weights/`:
-   `curl -L -o weights/vssd_tiny_best_ema.pth https://huggingface.co/YuhengSSS/VSSD/resolve/main/vssd_tiny_best_ema.pth`
-4. The teacher: copy `arcface_r50.pth` (set `teacher_weights`), or bring an already computed
-   `runs/teacher/casia_r50.npy` (set `teacher_embeddings`). Neither is in git.
-5. The augmentation library is not a declared dependency (training only):
-   `uv pip install -e "<path to AI Red Team - Multimodal Dataset>" av`.
-   `uv sync` removes it again; reinstall after every sync.
-6. Run, from the repo root:
+Sized for a 12 GB GPU (batch 64 x accumulation 2, bf16). The step-by-step setup (what to install,
+what to download, what to copy) is in `ENTRENAMIENTO.md`. The paths of `train.yaml` and `smoke.yaml`
+are relative to the repo root and match that layout.
 
 ```bash
 lsj precompute-teacher --config src/lsj_biometrics/training/configs/train.yaml
 lsj train --config src/lsj_biometrics/training/configs/train.yaml --steps 200   # peak VRAM and images/s, saves nothing
 lsj train --config src/lsj_biometrics/training/configs/train.yaml               # resumes from the last epoch_<k>.pt
-lsj evaluate --model runs/vssd_t_adaface/best.pt --eval-dir <eval_dir> --sets lfw cfp_fp agedb_30 calfw cplfw --out runs/vssd_t_adaface/eval
+lsj evaluate --model runs/vssd_t_adaface/best.pt --eval-dir data/dataset/eval --sets lfw cfp_fp agedb_30 calfw cplfw --out runs/vssd_t_adaface/eval
 lsj evaluate ... --perturb src/lsj_biometrics/training/configs/heldout_specs.yaml   # transforms never seen in training
-lsj evaluate --teacher <arcface_r50.pth> ...                                        # the teacher as reference
+lsj evaluate --teacher weights/arcface_r50.pth ...                                  # the teacher as reference
 ```
 
 If batch 64 does not fit, set `checkpointing: true`. Each `epoch_<k>.pt` is about 350 MB.
@@ -151,7 +140,3 @@ delivery photos, clean and perturbed. On the 49 photos YuNet found every face (M
 person on one) and kept 96.3% under perturbation against 89.5% for MTCNN.
 
 Paths in `operating_point.yaml` are relative to the directory `lsj` runs from.
-
-## Third-party code
-
-See `THIRD_PARTY_NOTICES.md`.
