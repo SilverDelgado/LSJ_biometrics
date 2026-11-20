@@ -1,0 +1,39 @@
+
+rain_realistic:
+  source: custom
+  function: falling_rain
+  type: photometric
+  temporal: time
+  models: "precipitation falling through the scene"
+  levels:
+    1: {density: 2.0, drop_length: 0.030, drop_width: 1, speed: 3.0, slant: [-15, 15], brightness_coefficient: 0.94}
+    2: {density: 4.0, drop_length: 0.035, drop_width: 1, speed: 3.0, slant: [-15, 15], brightness_coefficient: 0.88}
+    3: {density: 6.0, drop_length: 0.040, drop_width: 1, speed: 3.0, slant: [-15, 15], brightness_coefficient: 0.82}
+    4: {density: 9.0, drop_length: 0.050, drop_width: 1, speed: 3.0, slant: [-15, 15], brightness_coefficient: 0.76}
+    5: {density: 12.0, drop_length: 0.060, drop_width: 2, speed: 3.0, slant: [-15, 15], brightness_coefficient: 0.70}
+  params:
+    density: {type: float, min: 0.1, max: 50.0}
+    drop_length: {type: float, min: 0.005, max: 0.5}
+    drop_width: {type: int, min: 1, max: 10}
+    speed: {type: float, min: 0.1, max: 20.0}
+    slant: {type: tuple, min: -60, max: 60}
+    brightness_coefficient: {type: float, min: 0.0, max: 1.0}
+
+sun_glare_realistic:
+  source: custom
+  function: moving_sun
+  type: photometric
+  temporal: time
+  models: "the sun inside the field of view, moving with the earth's rotation"
+  levels:
+    1: {src_radius: 0.030, num_ghosts: [3, 4], veil: 0.02, flare_roi: [0.1, 0.05, 0.9, 0.5], fov: 60}
+    2: {src_radius: 0.045, num_ghosts: [4, 5], veil: 0.04, flare_roi: [0.1, 0.05, 0.9, 0.5], fov: 60}
+    3: {src_radius: 0.060, num_ghosts: [5, 6], veil: 0.06, flare_roi: [0.1, 0.05, 0.9, 0.5], fov: 60}
+    4: {src_radius: 0.075, num_ghosts: [6, 8], veil: 0.09, flare_roi: [0.1, 0.05, 0.9, 0.5], fov: 60}
+    5: {src_radius: 0.090, num_ghosts: [7, 9], veil: 0.12, flare_roi: [0.1, 0.05, 0.9, 0.5], fov: 60}
+  params:
+    src_radius: {type: float, min: 0.005, max: 0.5}
+    num_ghosts: {type: tuple, min: 0, max: 20}
+    veil: {type: float, min: 0.0, max: 1.0}
+    flare_roi: {type: list}
+    fov: {type: float, min: 10.0, max: 180.0}

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import Iterable
 
-from lsj_biometrics.campaign.face import CroppedFaceImage
+import numpy as np
+
 from lsj_biometrics.campaign.template import Template
-from lsj_biometrics.engine.feature_extractor import FeatureExtractor
 from lsj_biometrics.engine.matcher import Match
+from lsj_biometrics.gallery.decision import accepts
 from lsj_biometrics.gallery.repository import GalleryRepository, require_model
 
 
@@ -14,23 +14,32 @@ class IdentificationResult:
     matches: list[Match]
     decision: Match | None
 
+
+@dataclass(frozen=True)
+class BatchIdentification:
+    enrolled: tuple[str, ...]
+    identities: np.ndarray
+    scores: np.ndarray
+
+
 class IdentificationService:
-    def __init__(self, extractor: FeatureExtractor, repository: GalleryRepository, threshold: float) -> None:
-        self._extractor = extractor
+    def __init__(self, repository: GalleryRepository, threshold: float) -> None:
         self._repository = repository
         self._threshold = threshold
 
-    def identify(self, face: CroppedFaceImage, rank: int = 5) -> IdentificationResult:
-        template = self._extractor.extract(face)
+    def identify(self, template: Template, rank: int) -> IdentificationResult:
         require_model(template, self._repository)
-        matches = best_per_identity(self._repository.search(template, rank))[:rank]
-        decision = matches[0] if matches and matches[0].score >= self._threshold else None
+        matches = self._repository.search(template, rank)
+        decision = None
+        if matches and accepts(matches[0].score, self._threshold):
+            decision = matches[0]
         return IdentificationResult(template=template, matches=matches, decision=decision)
 
-
-def best_per_identity(matches: Iterable[Match]) -> list[Match]:
-    best: dict[str, Match] = {}
-    for match in matches:
-        if match.identity_id not in best or match.score > best[match.identity_id].score:
-            best[match.identity_id] = match
-    return sorted(best.values(), key=lambda match: match.score, reverse=True)
+    def identify_batch(self, vectors: np.ndarray) -> BatchIdentification:
+        scores, enrolled = self._repository.scores(vectors)
+        if not enrolled:
+            raise ValueError("the gallery is empty: nothing to identify against")
+        best = scores.argmax(axis=1)
+        identities = np.asarray(enrolled)[best]
+        top = scores[np.arange(scores.shape[0]), best].astype(np.float64)
+        return BatchIdentification(enrolled=enrolled, identities=identities, scores=top)

@@ -15,6 +15,9 @@ dependencies = [
     "uvicorn>=0.30",
 ]
 
+[project.scripts]
+lsj = "lsj_biometrics.cli:main"
+
 [project.optional-dependencies]
 mtcnn = ["mtcnn>=1.0.0", "tensorflow-cpu>=2.16"]
 onvif = ["onvif-zeep>=0.2.12"]

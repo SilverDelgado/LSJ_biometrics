@@ -1,0 +1,31 @@
+paths:
+  casia: /data/users/pablodm/biometric/data/casia-webface
+  eval_dir: /data/users/pablodm/biometric/data/eval
+  augment_specs: src/lsj_biometrics/training/configs/augment_specs.yaml
+  teacher_weights: /data/users/pablodm/biometric/models/arcface/arcface_r50.pth
+  teacher_embeddings: runs/smoke/teacher_256.npy
+  imagenet_weights: null
+  output_dir: runs/smoke
+model:
+  input_size: 64
+  depths: [1, 1, 1, 1]
+  dims: [32, 32, 64, 64]
+  d_state: 16
+  drop_path_rate: 0.0
+batch_size: 4
+accumulation: 2
+checkpointing: false
+epochs: 2
+lr: 0.0003
+weight_decay: 0.05
+warmup_epochs: 1
+distill_weight: 10.0
+perturb_probability: 0.5
+workers: 2
+device: cpu
+eval_sets: [lfw]
+eval_limit: 200
+log_every: 16
+seed: 0
+holdout_identities: 200
+subset: 256

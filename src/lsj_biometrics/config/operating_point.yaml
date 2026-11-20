@@ -1,1 +1,8 @@
-# Biometric thresholds and operating point settings belong here
+model: runs/vssd_t_adaface/best.pt
+detector: yunet
+device: cuda
+database: data/gallery/gallery.csv
+crops: data/crops
+threshold: 0.4
+threshold_origin: "placeholder, not calibrated"
+rank: 5
