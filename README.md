@@ -8,6 +8,7 @@ distillation from an ArcFace teacher. The detector is YuNet (OpenCV). The databa
 
 ```bash
 uv sync --extra dev
+uv sync --extra dev --extra train   # to train: also the augmentation library (private repo) and av
 ```
 
 ## The nine methods

@@ -1,7 +1,7 @@
 [project]
 name = "lsj-biometrics"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
     "jinja2>=3.1",
@@ -22,6 +22,7 @@ lsj = "lsj_biometrics.cli:main"
 mtcnn = ["mtcnn>=1.0.0", "tensorflow-cpu>=2.16"]
 onvif = ["onvif-zeep>=0.2.12"]
 dev = ["httpx>=0.27", "pytest>=8.0"]
+train = ["ai-dataset-transformation", "av>=14.0", "kagglehub>=0.3"]
 
 [build-system]
 requires = ["hatchling"]
@@ -33,6 +34,7 @@ packages = ["src/lsj_biometrics"]
 [tool.uv.sources]
 torch = { index = "pytorch-cu128" }
 torchvision = { index = "pytorch-cu128" }
+ai-dataset-transformation = { git = "https://github.com/SilverDelgado/dataset-transformation-library.git", rev = "4196ea7d8d46aad36746c8def8952a1ecce83494" }
 
 [[tool.uv.index]]
 name = "pytorch-cu128"

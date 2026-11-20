@@ -8,18 +8,10 @@ hay que editar ningún YAML.
 
 - Una GPU NVIDIA con un driver que soporte CUDA 12.8 (driver 570 o más nuevo). Compruébalo con `nvidia-smi`.
 - `git` y `uv` (https://docs.astral.sh/uv/getting-started/installation/). `uv` instala Python 3.12 solo.
+- Acceso desde git al repo privado `SilverDelgado/dataset-transformation-library` (la librería de
+  transformaciones del aumento de datos): sesión de GitHub en git o `gh auth login`.
 - Unos 20 GB de disco: datos 3,4 GB, pesos 0,6 GB, embeddings del maestro 0,5 GB y 350 MB por
   checkpoint de época (solo hace falta el último para retomar; los anteriores se pueden borrar).
-- La carpeta `home_kit/` en un USB (sale de `/data/users/pablodm/LSJ_biom/home_kit/` del servidor):
-
-| Fichero | Para qué | sha256 |
-|---|---|---|
-| `ai_dataset_transformation-1.1-py3-none-any.whl` | la librería de transformaciones, para el aumento de datos; no está en GitHub a propósito | `f5db3cef78a1541da59327896e8db470c1501bbcb7d8f6b6fa91d13bf31b73df` |
-| `arcface_r50.pth` (175 MB) | el maestro de la distilación; no se puede descargar | `ef005ba502a2d0f40e7b94245054d3a23e375776f7035080fcbce45ae49cfb01` |
-| `Dataset.tar.gz` (15 MB) | las fotos de la entrega, la galería de la calibración | |
-
-Opcional en el mismo USB: `casia-webface.zip` (2,9 GB, de `/data/users/pablodm/biometric/data/`), si no
-quieres descargar CASIA de kaggle.
 
 ## 1. Repo y entorno
 
@@ -27,9 +19,12 @@ quieres descargar CASIA de kaggle.
 git clone https://github.com/SilverDelgado/LSJ_biometrics.git
 cd LSJ_biometrics
 git checkout feat/biometric_system
-uv sync --extra dev
-uv pip install <ruta al USB>/home_kit/ai_dataset_transformation-1.1-py3-none-any.whl av
+uv sync --extra dev --extra train
 ```
+
+`--extra train` instala la librería de transformaciones desde su repo privado (fijada a un commit en
+`pyproject.toml`), `av` y `kagglehub`. Usa siempre `--extra train` al sincronizar en esta máquina, o la
+librería se desinstala.
 
 Activa el entorno para tener el comando `lsj`:
 
@@ -38,28 +33,21 @@ source .venv/bin/activate        # Linux
 .venv\Scripts\activate           # Windows
 ```
 
-`uv sync` desinstala la librería de transformaciones, porque no es una dependencia declarada: repite el
-`uv pip install` del wheel después de cada `uv sync`. Con el entorno activado usa `lsj ...` directamente.
-
 ## 2. Datos
 
-CASIA-WebFace alineado a 112 y los conjuntos de verificación `.bin`. Una de las dos:
+CASIA-WebFace alineado a 112 y los conjuntos de verificación `.bin`:
 
 ```bash
-uv pip install kagglehub
 python data/dataset/download.py
 ```
 
-`kagglehub` puede pedir credenciales de Kaggle (`~/.kaggle/kaggle.json`). O bien descomprime el zip del USB:
+`kagglehub` puede pedir credenciales de Kaggle (`~/.kaggle/kaggle.json`). Si los traes en
+`casia-webface.zip`, descomprímelo con `unzip casia-webface.zip -d data/dataset`.
+
+Las fotos de la entrega (`Dataset.tar.gz`, no están en git):
 
 ```bash
-unzip <ruta al USB>/casia-webface.zip -d data/dataset
-```
-
-Las fotos de la entrega:
-
-```bash
-tar -xzf <ruta al USB>/home_kit/Dataset.tar.gz -C data
+tar -xzf Dataset.tar.gz -C data
 ```
 
 Tiene que quedar así:
@@ -69,7 +57,7 @@ data/dataset/casia-webface/train.rec
 data/dataset/casia-webface/train.idx
 data/dataset/casia-webface/property
 data/dataset/eval/lfw.bin  cfp_fp.bin  agedb_30.bin  calfw.bin  cplfw.bin
-data/Dataset/              (49 fotos)
+data/Dataset/              (las fotos de la entrega)
 ```
 
 ## 3. Pesos
@@ -77,8 +65,10 @@ data/Dataset/              (49 fotos)
 ```bash
 mkdir weights
 curl -L -o weights/vssd_tiny_best_ema.pth https://huggingface.co/YuhengSSS/VSSD/resolve/main/vssd_tiny_best_ema.pth
-cp <ruta al USB>/home_kit/arcface_r50.pth weights/
 ```
+
+El maestro `arcface_r50.pth` (175 MB) no se puede descargar: cópialo a `weights/arcface_r50.pth`.
+sha256 `ef005ba502a2d0f40e7b94245054d3a23e375776f7035080fcbce45ae49cfb01`.
 
 ## 4. Comprobación rápida (unos minutos, en CPU)
 
@@ -88,7 +78,7 @@ lsj precompute-teacher --config src/lsj_biometrics/training/configs/smoke.yaml
 lsj train --config src/lsj_biometrics/training/configs/smoke.yaml
 ```
 
-La hoja comprueba a la vez CASIA y la librería de transformaciones (míralas: cada transformación más
+La hoja comprueba a la vez CASIA y la librería de transformaciones (mírala: cada transformación más
 fuerte nivel a nivel). La prueba de humo entrena un modelo diminuto con 256 imágenes durante dos épocas:
 la pérdida tiene que bajar y tienen que aparecer `runs/smoke/epoch_1.pt`, `epoch_2.pt` y `best.pt`.
 
@@ -146,7 +136,8 @@ no hacen falta.
 
 ## Problemas típicos
 
-- `ModuleNotFoundError: ai_dataset_transformation`: vuelve a instalar el wheel (un `uv sync` lo quitó).
+- `ModuleNotFoundError: ai_dataset_transformation`: `uv sync --extra dev --extra train` (un sync sin `--extra train` la quitó).
+- `uv sync` falla al clonar `dataset-transformation-library`: git no tiene acceso al repo privado en esa máquina.
 - `CUDA out of memory`: `checkpointing: true` en `train.yaml`.
 - `device cuda asked for, but torch sees no cuda device`: driver de NVIDIA; `nvidia-smi` tiene que verse.
 - `train.rec missing`: los datos no están en `data/dataset/` (paso 2).
