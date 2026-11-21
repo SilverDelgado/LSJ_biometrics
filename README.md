@@ -11,37 +11,6 @@ uv sync --extra dev
 uv sync --extra dev --extra train   # to train: also the augmentation library (private repo) and av
 ```
 
-## The nine methods
-
-The trained checkpoint is `runs/vssd_t_adaface/best.pt` (see `src/lsj_biometrics/config/operating_point.yaml`;
-every key there is required). Each command takes `--config` to point to another operating point.
-
-```bash
-lsj enroll-folder data/Dataset                         # one identity per photo, the name without _YYYY
-lsj inscribir   --id <id> --foto <photo>
-lsj verificar   --id <id> --foto <photo>
-lsj identificar --foto <photo>
-lsj inscribir_sd / verificar_sd / identificar_sd ...   # the photo is already the face: no detector
-lsj inscribir_t --id <id> --template <file.npy>        # a template of 512 floats: no detector, no extractor
-lsj verificar_t / identificar_t ...
-```
-
-From Python:
-
-```python
-from pathlib import Path
-from lsj_biometrics.campaign.image import Image
-from lsj_biometrics.config.operating_point import load_operating_point
-from lsj_biometrics.system import build_system
-
-system = build_system(load_operating_point(Path("src/lsj_biometrics/config/operating_point.yaml")))
-system.inscribir("keanu_reeves", Image(image_id="keanu", path=Path("keanu.png")))
-result = system.identificar(Image(image_id="probe", path=Path("probe.jpg")))
-```
-
-The gallery is `data/gallery/gallery.csv`, one row per template:
-`identity_id,template_id,model_key,created_at,vector`.
-
 ## Docker
 
 ```bash
@@ -49,7 +18,7 @@ docker build -t lsj-biometrics .
 docker run --gpus all -v $PWD/runs:/app/runs -v $PWD/data/gallery:/app/data/gallery -v $PWD/data/Dataset:/app/data/Dataset lsj-biometrics enroll-folder data/Dataset
 ```
 
-Without a GPU, set `device: cpu` in the operating point (about 0.03 s per face on CPU).
+Without a GPU, set `device: cpu` in the operating point.
 
 ## Training on another machine
 
