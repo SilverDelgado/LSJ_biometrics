@@ -53,9 +53,7 @@ Without a GPU, set `device: cpu` in the operating point (about 0.03 s per face o
 
 ## Training on another machine
 
-Sized for a 12 GB GPU (batch 64 x accumulation 2, bf16). The step-by-step setup (what to install,
-what to download, what to copy) is in `ENTRENAMIENTO.md`. The paths of `train.yaml` and `smoke.yaml`
-are relative to the repo root and match that layout.
+Sized for a 12 GB GPU (batch 64 x accumulation 2, bf16).
 
 ```bash
 lsj precompute-teacher --config src/lsj_biometrics/training/configs/train.yaml
@@ -66,32 +64,6 @@ lsj evaluate ... --perturb src/lsj_biometrics/training/configs/heldout_specs.yam
 lsj evaluate --teacher weights/arcface_r50.pth ...                                  # the teacher as reference
 ```
 
-If batch 64 does not fit, set `checkpointing: true`. Each `epoch_<k>.pt` is about 350 MB.
-
-`train.yaml`, every key required (relative paths are taken from the repo root):
-
-| key | meaning |
-|---|---|
-| `paths.teacher_weights` | ArcFace R50 weights, read only by `precompute-teacher` |
-| `paths.teacher_embeddings` | the precomputed `.npy`; `null` trains without distillation |
-| `paths.imagenet_weights` | VSSD-T ImageNet checkpoint; `null` starts the backbone from random weights |
-| `model` | `SSMConfig` fields; `{}` is VSSD-T, all four stages NC-SSD, at an internal 224 |
-| `checkpointing` | `true` recomputes every stage in the backward pass, for GPUs where batch 64 does not fit |
-| `distill_weight` | 10: `1 - cos` is at most 2 while the AdaFace logits carry a scale of 64, a weight of 1 would barely pull |
-| `eval_limit` | `null` evaluates every pair of the `.bin` sets each epoch |
-| `holdout_identities` | identities drawn from `seed` and never trained on, the impostors of `lsj calibrate` |
-| `subset` | `null` trains on every image of the trained identities; an integer keeps the first N (smoke runs) |
-
-`smoke.yaml` runs the whole pipeline on CPU in minutes: a tiny model, the first 256 CASIA images, two epochs.
-
-`augment_specs.yaml` (training) and `heldout_specs.yaml` (evaluation only: rain_realistic, sun_glare_realistic)
-are entries copied from the Robustness_DEKRA catalogue `configs/full/transform_specs.yaml`; in training
-motion_blur keeps levels 1-3 and light_change levels 1-2, stronger levels wash a 112 px face out.
-
-`holdout_identities: 1000` keeps 1,000 CASIA identities, drawn from `seed`, out of training (47,075 images
-with `seed: 0`): the model never sees them, so `lsj calibrate` can use them as honest impostors. The run
-writes them to `<output_dir>/holdout.json` before the first epoch and refuses to resume with another
-hold-out. The teacher embeddings still cover every CASIA image.
 
 ## Threshold
 
