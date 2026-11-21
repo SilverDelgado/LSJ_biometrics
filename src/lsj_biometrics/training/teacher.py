@@ -116,6 +116,8 @@ def precompute(dataset: CasiaDataset, model: nn.Module, out_path: Path, batch_si
         raise ValueError("the teacher rows follow the CASIA index from 0: the dataset has to cover 0..N-1 in order")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     partial = out_path.with_name(out_path.name + ".partial")
+    if partial.exists():
+        partial.unlink()
     rows = np.lib.format.open_memmap(partial, mode="w+", dtype=np.float16, shape=(len(dataset), EMBEDDING_DIM))
     model = model.to(device).eval()
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=workers, pin_memory=device.startswith("cuda"))

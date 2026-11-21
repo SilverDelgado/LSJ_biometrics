@@ -9,14 +9,14 @@ paths:
 model: {}
 batch_size: 64
 accumulation: 2
-checkpointing: false
+checkpointing: true
 epochs: 25
 lr: 0.0003
 weight_decay: 0.05
 warmup_epochs: 1
 distill_weight: 10.0
 perturb_probability: 0.5
-workers: 8
+workers: 2
 device: cuda
 eval_sets: [lfw, cfp_fp, agedb_30, calfw, cplfw]
 eval_limit: null
