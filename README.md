@@ -16,12 +16,6 @@ runs/vssd_t_adaface/best.pt
 gh release download lsj-submission --repo SilverDelgado/LSJ_biometrics --pattern best.pt --dir runs/vssd_t_adaface
 ```
 
-SHA-256 del checkpoint:
-
-```text
-798D1F3B9F8B1EE5D29E48E243F143EEE5D3EE1B609003206382FE6C4E52B4A3
-```
-
 ### 2. Instalar
 
 Desde la raíz del repositorio:
@@ -36,28 +30,18 @@ Para CPU, cambiar `device: cuda` por `device: cpu` en:
 src/lsj_biometrics/config/operating_point.yaml
 ```
 
-### 3. Preparar la galería
+### 3. Ejecutar
 
-Colocar las fotos de las personas en una carpeta. El `id` se obtiene del nombre del
-archivo, sin el sufijo opcional `_YYYY`.
-
-```powershell
-lsj enroll-folder <carpeta>
-```
-
-Esto genera:
+La galería ya está preparada en:
 
 ```text
 data/gallery/gallery.csv
-data/crops/
 ```
 
-La galería y el umbral incluidos están preparados para el uso entregado. Si se
-cambia la galería o se añaden identidades, recalibrar el modelo antes de usarlo.
+No hace falta ejecutar `lsj enroll-folder`. El checkpoint descargado y esa galería
+pertenecen al mismo modelo entregado.
 
-### 4. Operaciones
-
-Inscribir:
+Inscribir nuevas personas, si se desea:
 
 ```powershell
 lsj inscribir --id <id> --foto <foto>
@@ -85,7 +69,7 @@ lsj identificar_t --template <template.npy>
 - `_t`: usa directamente un vector NumPy de 512 valores.
 - `rank: 1` en el operating point devuelve solo el candidato con mayor puntuación.
 
-### 5. Configuración
+### 4. Archivos de ejecución
 
 El archivo usado por las operaciones es:
 
@@ -99,17 +83,10 @@ La base de datos tiene el formato:
 identity_id,template_id,model_key,created_at,vector
 ```
 
+Las fotos de las 49 identidades entregadas están disponibles en `data/dataset`.
+Solo son necesarias para pruebas, enrolamiento adicional o reconstrucción de la
+galería.
+
 ## TRAINING
 
 El entrenamiento no es necesario para ejecutar el sistema.
-
-Para reproducirlo:
-
-```powershell
-uv sync --extra dev --extra train
-lsj precompute-teacher --config src/lsj_biometrics/training/configs/train.yaml
-lsj train --config src/lsj_biometrics/training/configs/train.yaml
-```
-
-Los archivos de entrenamiento, incluyendo el holdout CASIA, no son necesarios para
-las nueve operaciones de ejecución.
