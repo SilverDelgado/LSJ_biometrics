@@ -37,11 +37,8 @@ La galería ya está preparada en:
 ```text
 data/gallery/gallery.csv
 ```
-
-No hace falta ejecutar `lsj enroll-folder`. El checkpoint descargado y esa galería
-pertenecen al mismo modelo entregado.
-
-Inscribir nuevas personas, si se desea:
+Operating point ya calibrado para galeria actual y best pt.
+Inscribir:
 
 ```powershell
 lsj inscribir --id <id> --foto <foto>
@@ -65,10 +62,6 @@ lsj identificar_sd --foto <foto>
 lsj identificar_t --template <template.npy>
 ```
 
-- `_sd`: la foto ya contiene una cara; no ejecuta el detector.
-- `_t`: usa directamente un vector NumPy de 512 valores.
-- `rank: 1` en el operating point devuelve solo el candidato con mayor puntuación.
-
 ### 4. Archivos de ejecución
 
 El archivo usado por las operaciones es:
@@ -77,16 +70,8 @@ El archivo usado por las operaciones es:
 src/lsj_biometrics/config/operating_point.yaml
 ```
 
-La base de datos tiene el formato:
+La bd tiene el formato:
 
 ```text
 identity_id,template_id,model_key,created_at,vector
 ```
-
-Las fotos de las 49 identidades entregadas están disponibles en `data/dataset`.
-Solo son necesarias para pruebas, enrolamiento adicional o reconstrucción de la
-galería.
-
-## TRAINING
-
-El entrenamiento no es necesario para ejecutar el sistema.
