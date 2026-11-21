@@ -1,1 +1,8 @@
-# Biometric thresholds and operating point settings belong here
+model: runs/vssd_t_adaface/best.pt
+detector: yunet
+device: cuda
+database: data/gallery/gallery.csv
+crops: data/crops
+threshold: 0.41271609067916876
+threshold_origin: "FPIR 0.0005 (49 enrolled) vs 47075 heldout CASIA probes of 1000 identities with model runs/vssd_t_adaface/best.pt"
+rank: 1

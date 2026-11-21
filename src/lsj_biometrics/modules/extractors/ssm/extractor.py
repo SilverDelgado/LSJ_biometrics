@@ -25,32 +25,28 @@ class SSMFeatureExtractor:
         return self.extract_batch([face])[0]
 
     def extract_batch(self, faces: Sequence[CroppedFaceImage]) -> list[Template]:
-        return [
-            template
-            for start in range(0, len(faces), self._batch_size)
-            for template in self._extract_chunk(faces[start : start + self._batch_size])
-        ]
+        templates = []
+        for start in range(0, len(faces), self._batch_size):
+            chunk = faces[start:start + self._batch_size]
+            for template in self._extract_chunk(chunk):
+                templates.append(template)
+        return templates
 
     @torch.inference_mode()
     def _extract_chunk(self, faces: Sequence[CroppedFaceImage]) -> list[Template]:
-        pixels = np.stack([self._pixels(face) for face in faces])
+        crops = []
+        for face in faces:
+            crops.append(self._pixels(face))
+        pixels = np.stack(crops)
         batch = torch.from_numpy(pixels).to(self._device).permute(0, 3, 1, 2).float()
         vectors = F.normalize(self._model(batch), dim=-1).cpu()
         created_at = datetime.now(timezone.utc)
-        return [
-            Template(
-                vector=tuple(vector.tolist()),
-                model_name=self.model_name,
-                model_version=self.model_version,
-                normalized=True,
-                created_at=created_at,
-            )
-            for vector in vectors
-        ]
+        templates = []
+        for vector in vectors:
+            templates.append(Template(vector=tuple(vector.tolist()), model_name=self.model_name, model_version=self.model_version, normalized=True, created_at=created_at))
+        return templates
 
     def _pixels(self, face: CroppedFaceImage) -> np.ndarray:
         if face.layout is not None and face.layout != self.layout:
-            raise ValueError(
-                f"face {face.face_id} was aligned for a different layout than {self.model_name}:{self.model_version}"
-            )
+            raise ValueError(f"face {face.face_id} was aligned for a different layout than {self.model_name}:{self.model_version}")
         return load_rgb(face.image, size=(self.layout.size, self.layout.size))

@@ -1,0 +1,127 @@
+
+darkening:
+  source: albumentations
+  class: A.RandomBrightnessContrast
+  type: photometric
+  temporal: clip
+  models: "low ambient light or underexposure"
+  levels:
+    1: {brightness_limit: [-0.10, -0.10], contrast_limit: [0.0, 0.0]}
+    2: {brightness_limit: [-0.20, -0.20], contrast_limit: [0.0, 0.0]}
+    3: {brightness_limit: [-0.30, -0.30], contrast_limit: [0.0, 0.0]}
+    4: {brightness_limit: [-0.40, -0.40], contrast_limit: [0.0, 0.0]}
+    5: {brightness_limit: [-0.50, -0.50], contrast_limit: [0.0, 0.0]}
+  params:
+    brightness_limit: {type: tuple, min: -1.0, max: 1.0, default: [-0.2, 0.2]}
+    contrast_limit: {type: tuple, min: -1.0, max: 1.0, default: [-0.2, 0.2]}
+
+overexposure:
+  source: albumentations
+  class: A.RandomBrightnessContrast
+  type: photometric
+  temporal: clip
+  models: "excess light or overexposure"
+  levels:
+    1: {brightness_limit: [0.10, 0.10], contrast_limit: [0.0, 0.0]}
+    2: {brightness_limit: [0.20, 0.20], contrast_limit: [0.0, 0.0]}
+    3: {brightness_limit: [0.30, 0.30], contrast_limit: [0.0, 0.0]}
+    4: {brightness_limit: [0.40, 0.40], contrast_limit: [0.0, 0.0]}
+    5: {brightness_limit: [0.50, 0.50], contrast_limit: [0.0, 0.0]}
+  params:
+    brightness_limit: {type: tuple, min: -1.0, max: 1.0, default: [-0.2, 0.2]}
+    contrast_limit: {type: tuple, min: -1.0, max: 1.0, default: [-0.2, 0.2]}
+
+light_change:
+  source: custom
+  function: auto_exposure
+  type: photometric
+  temporal: time
+  models: "a light switched on: the camera's auto-exposure catches up"
+  levels:
+    1: {stops: [2, 2], tau: 0.8}
+    2: {stops: [3, 3], tau: 1.0}
+  params:
+    stops: {type: tuple, min: 0.0, max: 10.0}
+    tau: {type: float, min: 0.05, max: 10.0}
+
+motion_blur:
+  source: albumentations
+  class: A.MotionBlur
+  type: photometric
+  temporal: clip
+  models: "relative speed between subject and camera"
+  levels:
+    1: {blur_limit: [3, 3], angle_range: [0, 360]}
+    2: {blur_limit: [9, 9], angle_range: [0, 360]}
+    3: {blur_limit: [17, 17], angle_range: [0, 360]}
+  params:
+    blur_limit: {type: tuple, min: 3, max: 51, default: [3, 7]}
+    angle_range: {type: tuple, min: 0.0, max: 360.0, default: [0.0, 360.0]}
+
+sensor_noise:
+  source: custom
+  function: iso_noise
+  type: photometric
+  temporal: time
+  models: "sensor gain under low light"
+  levels:
+    1: {color_shift: [0.06, 0.06], intensity: [0.25, 0.25]}
+    2: {color_shift: [0.10, 0.10], intensity: [0.40, 0.40]}
+    3: {color_shift: [0.14, 0.14], intensity: [0.55, 0.55]}
+    4: {color_shift: [0.18, 0.18], intensity: [0.70, 0.70]}
+    5: {color_shift: [0.22, 0.22], intensity: [0.85, 0.85]}
+  params:
+    color_shift: {type: tuple, min: 0.0, max: 1.0, default: [0.01, 0.05]}
+    intensity: {type: tuple, min: 0.0, max: 1.0, default: [0.1, 0.5]}
+
+night_ir:
+  source: custom
+  function: infrared
+  type: photometric
+  temporal: time
+  models: "the camera in infrared night mode"
+  levels:
+    1: {illumination: 1.0, falloff: 0.0, blur: 0.0001, grain: 0}
+    2: {illumination: 0.9, falloff: 0.2, blur: 0.0005, grain: 3}
+    3: {illumination: 0.8, falloff: 0.3, blur: 0.0008, grain: 6}
+    4: {illumination: 0.7, falloff: 0.4, blur: 0.0011, grain: 10}
+    5: {illumination: 0.6, falloff: 0.5, blur: 0.0015, grain: 15}
+  params:
+    illumination: {type: float, min: 0.05, max: 1.5}
+    falloff: {type: float, min: 0.0, max: 1.0}
+    blur: {type: float, min: 0.0001, max: 0.02}
+    grain: {type: float, min: 0.0, max: 60.0}
+
+compression:
+  source: albumentations
+  class: A.ImageCompression
+  type: photometric
+  temporal: clip
+  models: "codec of the transmission channel"
+  levels:
+    1: {quality_range: [80, 80], compression_type: jpeg}
+    2: {quality_range: [65, 65], compression_type: jpeg}
+    3: {quality_range: [50, 50], compression_type: jpeg}
+    4: {quality_range: [35, 35], compression_type: jpeg}
+    5: {quality_range: [20, 20], compression_type: jpeg}
+  params:
+    quality_range: {type: tuple, min: 1, max: 100, default: [99, 100]}
+    compression_type: {type: literal, default: jpeg}
+
+occlusion:
+  source: albumentations
+  class: A.CoarseDropout
+  type: photometric
+  temporal: clip
+  models: "environment obstacles covering part of the scene"
+  levels:
+    1: {num_holes_range: [8, 8], hole_height_range: [0.071, 0.071], hole_width_range: [0.071, 0.071], fill: 0}
+    2: {num_holes_range: [8, 8], hole_height_range: [0.100, 0.100], hole_width_range: [0.100, 0.100], fill: 0}
+    3: {num_holes_range: [8, 8], hole_height_range: [0.122, 0.122], hole_width_range: [0.122, 0.122], fill: 0}
+    4: {num_holes_range: [8, 8], hole_height_range: [0.141, 0.141], hole_width_range: [0.141, 0.141], fill: 0}
+    5: {num_holes_range: [8, 8], hole_height_range: [0.158, 0.158], hole_width_range: [0.158, 0.158], fill: 0}
+  params:
+    num_holes_range: {type: tuple, min: 1, max: 50, default: [1, 1]}
+    hole_height_range: {type: union, min: 0.0, max: 1.0, default: [0.1, 0.2]}
+    hole_width_range: {type: union, min: 0.0, max: 1.0, default: [0.1, 0.2]}
+    fill: {type: union, default: 0}
