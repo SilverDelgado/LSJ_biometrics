@@ -41,25 +41,25 @@ Operating point ya calibrado para galeria actual y best pt.
 Inscribir:
 
 ```powershell
-lsj inscribir --id <id> --foto <foto>
-lsj inscribir_sd --id <id> --foto <foto>
-lsj inscribir_t --id <id> --template <template.npy>
+uv lsj inscribir --id <id> --foto <foto>
+uv lsj inscribir_sd --id <id> --foto <foto>
+uv lsj inscribir_t --id <id> --template <template.npy>
 ```
 
 Verificar:
 
 ```powershell
-lsj verificar --id <id> --foto <foto>
-lsj verificar_sd --id <id> --foto <foto>
-lsj verificar_t --id <id> --template <template.npy>
+uv lsj verificar --id <id> --foto <foto>
+uv lsj verificar_sd --id <id> --foto <foto>
+uv lsj verificar_t --id <id> --template <template.npy>
 ```
 
 Identificar:
 
 ```powershell
-lsj identificar --foto <foto>
-lsj identificar_sd --foto <foto>
-lsj identificar_t --template <template.npy>
+uv lsj identificar --foto <foto>
+uv lsj identificar_sd --foto <foto>
+uv lsj identificar_t --template <template.npy>
 ```
 
 ### 4. Archivos de ejecución
