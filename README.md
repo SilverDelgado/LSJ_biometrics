@@ -38,20 +38,22 @@ La galería ya está preparada en:
 data/gallery/gallery.csv
 ```
 Operating point ya calibrado para galeria actual y best pt.
+
+**Use uv run**
 Inscribir:
 
 ```powershell
-uv lsj inscribir --id <id> --foto <foto>
-uv lsj inscribir_sd --id <id> --foto <foto>
-uv lsj inscribir_t --id <id> --template <template.npy>
+lsj inscribir --id <id> --foto <foto>
+lsj inscribir_sd --id <id> --foto <foto>
+lsj inscribir_t --id <id> --template <template.npy>
 ```
 
 Verificar:
 
 ```powershell
-uv lsj verificar --id <id> --foto <foto>
-uv lsj verificar_sd --id <id> --foto <foto>
-uv lsj verificar_t --id <id> --template <template.npy>
+lsj verificar --id <id> --foto <foto>
+lsj verificar_sd --id <id> --foto <foto>
+lsj verificar_t --id <id> --template <template.npy>
 ```
 
 Identificar:
